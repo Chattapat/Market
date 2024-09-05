@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { styled } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useRouter } from 'next/router';
 
 // สร้างธีมใหม่
 const theme = createTheme({
@@ -31,6 +32,13 @@ const CustomButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function LoginPage() {
+    const router = useRouter();
+
+  const handleLogin = () => {
+    // เขียนลอจิกการ login ที่นี่ (ถ้ามี)
+    // จากนั้นเปลี่ยนเส้นทางไปยังหน้า /home
+    router.push('/home');
+  };
   return (
     <ThemeProvider theme={theme}>
       <React.Fragment>
@@ -97,7 +105,7 @@ export default function LoginPage() {
                 }}
               />
 
-              <Link href="#" variant="body2" sx={{ alignSelf: 'flex-start', marginTop: 1 }}>
+              <Link href="/forgot-password" variant="body2" sx={{ alignSelf: 'flex-start', marginTop: 1 }}>
                 Forgot password?
               </Link>
 
@@ -106,21 +114,45 @@ export default function LoginPage() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                onClick={handleLogin}
               >
                 LOGIN
               </CustomButton>
 
               <Typography variant="body2" color="text.secondary">
-                {" Don't have an account? "}
-                <Link href="#" variant="body2">
+                {"Don't have an account? "}
+                <Link href="/register" variant="body2">
                   REGISTER
                 </Link>
               </Typography>
             </Box>
           </Container>
+
+          {/* ลิงก์ CONTACT ที่มุมล่างขวาของหน้า */}
+          <Box
+            sx={{
+                position: 'absolute',
+                bottom: 30, // ระยะห่างจากด้านล่างของหน้า
+                right: 40, // ระยะห่างจากด้านขวาของหน้า
+                display: 'flex', // จัดให้อยู่ในแถวเดียวกัน
+                alignItems: 'center', // จัดตำแหน่งแนวตั้งกลาง
+              }}
+            >
+              <img
+                src="/icon/contact.png" // ระบุ path ของไอคอนในโฟลเดอร์ public
+                alt="Contact Icon"
+                style={{
+                  width: '20px', // กำหนดขนาดของไอคอน
+                  height: '20px',
+                  marginRight: '8px', // ระยะห่างระหว่างไอคอนกับข้อความ
+                }}
+              />
+            <Link href="/contact" variant="body1" sx={{ color: '#000000' }}>
+              CONTACT US
+            </Link>
+          </Box>
         </Box>
       </React.Fragment>
     </ThemeProvider>
   );
 }
-

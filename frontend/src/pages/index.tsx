@@ -1,32 +1,34 @@
 import React from 'react';
+import { useRouter } from 'next/router'; // import useRouter จาก Next.js
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
 // ปุ่มที่กำหนดเอง
-function MyButton({ title }: { title: string }) {
+function MyButton({ title, onClick }: { title: string; onClick: () => void }) {
   return (
     <button
+      onClick={onClick} // ใช้ฟังก์ชัน onClick
       style={{
-        fontSize: '1.5rem', // ขนาดของฟอนต์
-        padding: '15px 30px', // ขนาดของ padding
-        backgroundColor: '#6f6f6f', // สีพื้นหลัง
-        color: '#fff', // สีของข้อความ
-        border: 'none', // ไม่มีขอบ
-        borderRadius: '10px', // ความมนของขอบ
-        cursor: 'pointer', // เปลี่ยนเมาส์เป็นรูปมือเมื่อ hover
-        transition: 'background-color 0.3s ease, transform 0.3s ease', // เพิ่มเอฟเฟกต์การเปลี่ยนสีและขยายเมื่อ hover
-        fontFamily: 'Roboto, sans-serif', // ใช้ฟอนต์ที่นำเข้า
-        fontWeight: '550', // หนา
-        textTransform: 'uppercase', // ข้อความเป็นตัวพิมพ์ใหญ่
+        fontSize: '1.5rem',
+        padding: '15px 30px',
+        backgroundColor: '#6f6f6f',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease, transform 0.3s ease',
+        fontFamily: 'Roboto, sans-serif',
+        fontWeight: '550',
+        textTransform: 'uppercase',
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.backgroundColor = '#04c900'; // สีเมื่อ hover
-        e.currentTarget.style.transform = 'scale(1.05)'; // ขยายขนาดเมื่อ hover
+        e.currentTarget.style.backgroundColor = '#04c900';
+        e.currentTarget.style.transform = 'scale(1.05)';
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.backgroundColor = '#dd0303'; // สีเมื่อไม่ hover
-        e.currentTarget.style.transform = 'scale(1)'; // คืนขนาดเมื่อไม่ hover
+        e.currentTarget.style.backgroundColor = '#dd0303';
+        e.currentTarget.style.transform = 'scale(1)';
       }}
     >
       {title}
@@ -35,13 +37,19 @@ function MyButton({ title }: { title: string }) {
 }
 
 export default function IndexPages() {
+  const router = useRouter(); // ใช้ useRouter เพื่อจัดการการนำทาง
+
+  const handleClick = () => {
+    router.push('/home'); // เมื่อกดปุ่มให้ไปที่ /login
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
       <Box
         sx={{
           bgcolor: '#a2e1ff',
-          height: '100vh', // กำหนดความสูงให้เต็มหน้าจอ
+          height: '100vh',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -53,17 +61,17 @@ export default function IndexPages() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: 0, // เอา padding ออกเพื่อให้ Container เต็มหน้าจอ
+            padding: 0,
           }}
         >
-          <MyButton title='WELCOME TO OUR MARKET' />
+          <MyButton title="WELCOME TO OUR MARKET" onClick={handleClick} />
           <img
-            src="/icon/click.png" // ระบุ path ของไอคอนในโฟลเดอร์ public
+            src="/icon/click.png"
             alt="Icon"
             style={{
-              width: '50px', // กำหนดขนาดของไอคอน
+              width: '50px',
               height: '50px',
-              marginLeft: '20px', // ระยะห่างระหว่างไอคอนกับปุ่ม
+              marginLeft: '20px',
             }}
           />
         </Container>
@@ -71,3 +79,4 @@ export default function IndexPages() {
     </React.Fragment>
   );
 }
+
