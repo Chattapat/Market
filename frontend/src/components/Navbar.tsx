@@ -1,3 +1,4 @@
+// src/components/Navbar.tsx
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -13,6 +14,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Link from 'next/link'; // นำเข้า Link จาก Next.js
 import { useState } from 'react';
+import { useTheme } from 'next-themes'; // นำเข้า useTheme จาก next-themes
+import { FaMoon, FaSun } from 'react-icons/fa'; // ไอคอน Moon และ Sun
 
 const pages = [
   { name: 'HOME', icon: '/icon/home.png', path: '/home' },
@@ -25,6 +28,7 @@ function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State สำหรับสถานะการล็อกอิน
+  const { theme, setTheme } = useTheme(); // ใช้ useTheme สำหรับการเปลี่ยนโหมด
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -47,8 +51,13 @@ function Navbar() {
     setIsLoggedIn(!isLoggedIn); // สลับสถานะการล็อกอิน/ออกจากระบบ
   };
 
+  // ฟังก์ชันสำหรับการเปลี่ยนโหมด
+  const handleToggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: theme === 'light' ? '#333' : '#1E1E1E' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Title Section */}
@@ -63,7 +72,7 @@ function Navbar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: theme === 'light' ? 'white' : '#E0E0E0',
               textDecoration: 'none',
             }}
           >
@@ -80,7 +89,7 @@ function Navbar() {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+              <MenuIcon sx={{ color: theme === 'light' ? 'white' : '#E0E0E0' }} />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -105,7 +114,7 @@ function Navbar() {
                     style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
                   >
                     <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>{page.name}</Typography>
                   </Link>
                 </MenuItem>
               ))}
@@ -118,7 +127,7 @@ function Navbar() {
               <Button
                 key={page.name}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center' }}
+                sx={{ my: 2, color: theme === 'light' ? 'white' : '#E0E0E0', display: 'flex', alignItems: 'center' }}
                 component={Link}
                 href={page.path}
               >
@@ -127,6 +136,16 @@ function Navbar() {
               </Button>
             ))}
           </Box>
+
+          {/* Theme Toggle Button */}
+          <IconButton
+            onClick={handleToggleTheme}
+            sx={{ ml: 2 }}
+            color="inherit"
+            aria-label="toggle theme"
+          >
+            {theme === 'light' ? <FaMoon size={24} /> : <FaSun size={24} />}
+          </IconButton>
 
           {/* User Avatar and Settings Menu */}
           <Box sx={{ flexGrow: 0 }}>
@@ -155,13 +174,13 @@ function Navbar() {
               {isLoggedIn ? (
                 <MenuItem onClick={handleCloseUserMenu}>
                   <Button onClick={handleLoginLogout} sx={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>LOG-OUT</Typography>
+                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>LOG-OUT</Typography>
                   </Button>
                 </MenuItem>
               ) : (
                 <MenuItem onClick={handleCloseUserMenu}>
                   <Link href="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center' }}>LOGIN</Typography>
+                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>LOGIN</Typography>
                   </Link>
                 </MenuItem>
               )}

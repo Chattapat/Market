@@ -1,0 +1,15 @@
+/* globals.css */
+html {
+    transition: background-color 0.5s ease;
+  }
+  
+  html.light {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  html.dark {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  

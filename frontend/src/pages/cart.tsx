@@ -74,7 +74,7 @@ const Cart: React.FC = () => {
           Total: ${totalPrice.toFixed(2)}
         </Typography>
         <Button variant="contained" color="primary" onClick={clearCart}>
-          Checkout
+          CHECKOUT
         </Button>
       </Box>
     </Container>
