@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,23 +11,25 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import Link from 'next/link'; // นำเข้า Link จาก Next.js
+import { useState } from 'react';
 
 const pages = [
-  { name: 'HOME', icon: '/icon/home.png' },
-  { name: 'SHOP', icon: '/icon/shop.png' },
-  { name: 'CART', icon: '/icon/cart.png' },
-  { name: 'CONTACT', icon: '/icon/contact.png' },
+  { name: 'HOME', icon: '/icon/home.png', path: '/home' },
+  { name: 'SHOP', icon: '/icon/shop.png', path: '/shop' },
+  { name: 'CART', icon: '/icon/cart.png', path: '/cart' },
+  { name: 'CONTACT', icon: '/icon/contact.png', path: '/contact' },
 ];
-const settings = ['ACCOUNT', 'LOG-OUT'];
 
 function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State สำหรับสถานะการล็อกอิน
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -41,15 +42,20 @@ function Navbar() {
     setAnchorElUser(null);
   };
 
+  // ฟังก์ชันสำหรับการล็อกอิน/ออกจากระบบ
+  const handleLoginLogout = () => {
+    setIsLoggedIn(!isLoggedIn); // สลับสถานะการล็อกอิน/ออกจากระบบ
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* Title Section */}
           <Typography
             variant="h6"
             noWrap
-            component="a"
+            component={Link} // ใช้ Link แทน a
             href="/"
             sx={{
               mr: 2,
@@ -61,13 +67,14 @@ function Navbar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            MARKET101
           </Typography>
 
+          {/* Mobile Menu Icon */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label="open navigation menu"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -93,45 +100,37 @@ function Navbar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
-                  <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                  <Link
+                    href={page.path}
+                    style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
+                    <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            MARKET
-          </Typography>
+
+          {/* Desktop Navigation Buttons */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page.name}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'flex', alignItems: 'center' }}
+                component={Link}
+                href={page.path}
               >
                 <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
                 <Typography sx={{ ml: 1 }}>{page.name}</Typography>
               </Button>
             ))}
           </Box>
+
+          {/* User Avatar and Settings Menu */}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Setting">
+            <Tooltip title="ACCOUNT">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
@@ -152,11 +151,20 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+              {/* เปลี่ยนรายการใน settings ตามสถานะการล็อกอิน */}
+              {isLoggedIn ? (
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Button onClick={handleLoginLogout} sx={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>LOG-OUT</Typography>
+                  </Button>
                 </MenuItem>
-              ))}
+              ) : (
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Link href="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography sx={{ textAlign: 'center' }}>LOGIN</Typography>
+                  </Link>
+                </MenuItem>
+              )}
             </Menu>
           </Box>
         </Toolbar>

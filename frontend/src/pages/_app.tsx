@@ -1,28 +1,21 @@
-// _app.tsx
-//import '../styles/globals.css';
-import type { AppProps } from 'next/app';
-import Navbar from '../components/Navbar';
+import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
+import Navbar from '../components/Navbar'; // นำเข้า Navbar
+import { CartProvider } from '../context/cartcontext'; // นำเข้า CartProvider
+import { ToastContainer } from 'react-toastify'; // นำเข้า ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // นำเข้า CSS ของ Toastify
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
-
-  // Check if the current route is the index page
-  const isHomePage = router.pathname === '/';
+  const showNavbar = router.pathname !== '/'; // ไม่แสดง Navbar ในหน้า index
 
   return (
-    <>
-      <Head>
-        <title>My App</title>
-        <meta name="description" content="Description of my app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      {!isHomePage && <Navbar />} {/* Show Navbar only if not on the index page */}
-      <Component {...pageProps} />
-    </>
+    <CartProvider>
+      {showNavbar && <Navbar />} {/* แสดง Navbar ทุกหน้าที่ไม่ใช่ index */}
+      <Component {...pageProps} /> {/* แสดง component ของแต่ละ page */}
+      <ToastContainer /> {/* แสดงการแจ้งเตือน */}
+    </CartProvider>
   );
 }
 
 export default MyApp;
-
