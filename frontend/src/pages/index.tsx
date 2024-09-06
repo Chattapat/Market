@@ -53,6 +53,7 @@ export default function IndexPages() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          backgroundImage: 'url(/imgs/background.jpg)',
         }}
       >
         <Container

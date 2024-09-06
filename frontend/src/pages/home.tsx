@@ -19,17 +19,17 @@ const Home: FC = () => {
           <h2>Featured Products</h2>
           <div className="product-list">
             <div className="product-card">
-              <img src="/icon/product1.png" alt="Product 1" />
+              <img src="/imgs/car.jpg" alt="Product 1" />
               <h3>Product 1</h3>
               <p>Description of product 1.</p>
             </div>
             <div className="product-card">
-              <img src="/icon/product2.png" alt="Product 2" />
+              <img src="/imgs/book.jpg" alt="Product 2" />
               <h3>Product 2</h3>
               <p>Description of product 2.</p>
             </div>
             <div className="product-card">
-              <img src="/icon/product3.png" alt="Product 3" />
+              <img src="/imgs/phone.jpg" alt="Product 3" />
               <h3>Product 3</h3>
               <p>Description of product 3.</p>
             </div>
@@ -46,7 +46,7 @@ const Home: FC = () => {
         <p>
           YOU HAVE ANY QUESTIONS?{' '}
           <Link href="/contact" passHref>
-            <span className="contact-link">Contact Us</span>
+            <span className="contact-link">CONTACT</span>
           </Link>
         </p>
       </footer>
@@ -58,7 +58,8 @@ const Home: FC = () => {
           --footer-bg: ${theme === 'light' ? '#f4f4f4' : '#333'};
           --footer-text: ${theme === 'light' ? '#333' : '#f4f4f4'};
           --info-text: ${theme === 'light' ? '#333' : '#f4f4f4'};
-          --spinner-bg: ${theme === 'light' ? '#3498db' : '#1abc9c'};
+          --button-bg: ${theme === 'light' ? '#3498db' : '#1abc9c'};
+          --button-hover-bg: ${theme === 'light' ? '#2980b9' : '#16a085'};
         }
         .container {
           display: flex;
@@ -109,7 +110,7 @@ const Home: FC = () => {
           display: inline-block;
           margin-top: 1rem;
           padding: 0.5rem 1rem;
-          background-color: #3498db;
+          background-color: var(--button-bg);
           color: #fff;
           border-radius: 4px;
           text-decoration: none;
@@ -117,7 +118,7 @@ const Home: FC = () => {
           cursor: pointer;
         }
         .shop-button:hover {
-          background-color: #2980b9;
+          background-color: var(--button-hover-bg);
         }
         .footer {
           text-align: center;

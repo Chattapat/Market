@@ -9,13 +9,12 @@ const Cart: React.FC = () => {
   const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCart();
 
   // ค้นหารายละเอียดสินค้าจากข้อมูลในตะกร้า
-  const cartItemsDetails = cartItems.map(cartItem => {
-    const item = items.find(item => item.id === cartItem.id);
-    if (item) {
-      return { ...item, quantity: cartItem.quantity }; // รวมข้อมูลสินค้ากับจำนวน
-    }
-    return null;
-  }).filter(item => item !== null);
+  const cartItemsDetails = cartItems
+    .map(cartItem => {
+      const item = items.find(item => item.id === cartItem.id);
+      return item ? { ...item, quantity: cartItem.quantity } : null;
+    })
+    .filter(Boolean); // กรอง null ออก
 
   // คำนวณยอดรวม
   const totalPrice = cartItemsDetails.reduce((acc, item) => acc + (item!.price * item!.quantity), 0);
@@ -43,14 +42,14 @@ const Cart: React.FC = () => {
                   ${item!.price.toFixed(2)} x {item!.quantity}
                 </Typography>
                 <Typography variant="h6" fontWeight="bold">
-                  ${ (item!.price * item!.quantity).toFixed(2) }
+                  ${(item!.price * item!.quantity).toFixed(2)}
                 </Typography>
 
                 {/* ปุ่มเพิ่มหรือลดจำนวนสินค้า */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                   <IconButton
                     onClick={() => decreaseQuantity(item!.id)}
-                    disabled={item!.quantity === 1} // ไม่อนุญาตให้ลดจนเหลือน้อยกว่า 1
+                    disabled={item!.quantity === 1}
                   >
                     <RemoveIcon />
                   </IconButton>
@@ -69,7 +68,9 @@ const Cart: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+
+      {/* แสดงยอดรวมและปุ่ม Checkout */}
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" fontWeight="bold">
           Total: ${totalPrice.toFixed(2)}
         </Typography>

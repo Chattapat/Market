@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -9,13 +8,12 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import Link from 'next/link'; // นำเข้า Link จาก Next.js
+import Link from 'next/link';
 import { useState } from 'react';
-import { useTheme } from 'next-themes'; // นำเข้า useTheme จาก next-themes
-import { FaMoon, FaSun } from 'react-icons/fa'; // ไอคอน Moon และ Sun
+import { useTheme } from 'next-themes';
+import { FaMoon, FaSun, FaSignInAlt, FaSignOutAlt, FaCog, FaUserPlus } from 'react-icons/fa';
 
 const pages = [
   { name: 'HOME', icon: '/icon/home.png', path: '/home' },
@@ -24,11 +22,11 @@ const pages = [
   { name: 'CONTACT', icon: '/icon/contact.png', path: '/contact' },
 ];
 
-function Navbar() {
+const Navbar: React.FC = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State สำหรับสถานะการล็อกอิน
-  const { theme, setTheme } = useTheme(); // ใช้ useTheme สำหรับการเปลี่ยนโหมด
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // สถานะของการล็อกอิน
+  const { theme, setTheme } = useTheme();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -38,22 +36,83 @@ function Navbar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const handleCloseNavMenu = () => setAnchorElNav(null);
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const handleCloseUserMenu = () => setAnchorElUser(null);
 
-  // ฟังก์ชันสำหรับการล็อกอิน/ออกจากระบบ
   const handleLoginLogout = () => {
-    setIsLoggedIn(!isLoggedIn); // สลับสถานะการล็อกอิน/ออกจากระบบ
+    setIsLoggedIn(prev => !prev); // สลับสถานะการล็อกอิน
+    handleCloseUserMenu();
   };
 
-  // ฟังก์ชันสำหรับการเปลี่ยนโหมด
   const handleToggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const renderMenuItems = () =>
+    pages.map((page) => (
+      <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+        <Link href={page.path} passHref>
+          <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+            <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
+            <Typography sx={{ color: theme === 'light' ? 'white' : 'grey.300', fontSize: '1rem' }}>
+              {page.name}
+            </Typography>
+          </Box>
+        </Link>
+      </MenuItem>
+    ));
+
+  const renderUserMenuItems = () => {
+    if (isLoggedIn) {
+      return (
+        <>
+          <MenuItem key="account" onClick={handleCloseUserMenu}>
+            <Link href="/account" passHref>
+              <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                <FaCog style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                <Typography sx={{ color: theme === 'light' ? 'white' : 'grey.300', fontSize: '1rem' }}>
+                  ACCOUNT
+                </Typography>
+              </Box>
+            </Link>
+          </MenuItem>
+          <MenuItem key="logout" onClick={handleLoginLogout}>
+            <Box sx={{ display: 'flex', alignItems: 'center', color: 'inherit' }}>
+              <FaSignOutAlt style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+              <Typography sx={{ color: theme === 'light' ? 'white' : 'grey.300', fontSize: '1rem' }}>
+                LOG-OUT
+              </Typography>
+            </Box>
+          </MenuItem>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <MenuItem key="login" onClick={handleCloseUserMenu}>
+            <Link href="/login" passHref>
+              <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                <FaSignInAlt style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                <Typography sx={{ color: theme === 'light' ? 'white' : 'grey.300', fontSize: '1rem' }}>
+                  LOGIN
+                </Typography>
+              </Box>
+            </Link>
+          </MenuItem>
+          <MenuItem key="register" onClick={handleCloseUserMenu}>
+            <Link href="/register" passHref>
+              <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                <FaUserPlus style={{ marginRight: '8px', fontSize: '1.2rem' }} />
+                <Typography sx={{ color: theme === 'light' ? 'white' : 'grey.300', fontSize: '1rem' }}>
+                  REGISTER
+                </Typography>
+              </Box>
+            </Link>
+          </MenuItem>
+        </>
+      );
+    }
   };
 
   return (
@@ -64,7 +123,7 @@ function Navbar() {
           <Typography
             variant="h6"
             noWrap
-            component={Link} // ใช้ Link แทน a
+            component={Link}
             href="/"
             sx={{
               mr: 2,
@@ -74,6 +133,7 @@ function Navbar() {
               letterSpacing: '.3rem',
               color: theme === 'light' ? 'white' : '#E0E0E0',
               textDecoration: 'none',
+              fontSize: '1.5rem',
             }}
           >
             MARKET101
@@ -94,47 +154,20 @@ function Navbar() {
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Link
-                    href={page.path}
-                    style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-                  >
-                    <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>{page.name}</Typography>
-                  </Link>
-                </MenuItem>
-              ))}
+              {renderMenuItems()}
             </Menu>
           </Box>
 
           {/* Desktop Navigation Buttons */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: theme === 'light' ? 'white' : '#E0E0E0', display: 'flex', alignItems: 'center' }}
-                component={Link}
-                href={page.path}
-              >
-                <img src={page.icon} alt={page.name} style={{ width: 24, height: 24, marginRight: 8 }} />
-                <Typography sx={{ ml: 1 }}>{page.name}</Typography>
-              </Button>
-            ))}
+            {renderMenuItems()}
           </Box>
 
           {/* Theme Toggle Button */}
@@ -149,47 +182,30 @@ function Navbar() {
 
           {/* User Avatar and Settings Menu */}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="ACCOUNT">
+            <Tooltip title={isLoggedIn ? 'ACCOUNT' : 'LOGIN / REGISTER'}>
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar src={isLoggedIn ? '/icon/user.png' : '/icon/guest.png'} />
               </IconButton>
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {/* เปลี่ยนรายการใน settings ตามสถานะการล็อกอิน */}
-              {isLoggedIn ? (
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Button onClick={handleLoginLogout} sx={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>LOG-OUT</Typography>
-                  </Button>
-                </MenuItem>
-              ) : (
-                <MenuItem onClick={handleCloseUserMenu}>
-                  <Link href="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography sx={{ textAlign: 'center', color: theme === 'light' ? 'black' : 'white' }}>LOGIN</Typography>
-                  </Link>
-                </MenuItem>
-              )}
+              {renderUserMenuItems()}
             </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};
 
 export default Navbar;
+
+
