@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -8,52 +8,78 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 
-// สร้างธีมใหม่
+// Create a new theme
 const theme = createTheme({
   palette: {
     text: {
-      secondary: '#cfcfcf', // สีสำหรับ Typography
+      secondary: '#cfcfcf', // Color for Typography
     },
     primary: {
-      main: '#ffc855', // สีหลักสำหรับ Link
+      main: '#ffc855', // Main color for Link
     },
   },
 });
 
-// สไตล์ปุ่มที่กำหนดเอง
+// Custom styled button
 const CustomButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#aeaeae', // กำหนดสีพื้นหลังของปุ่ม
-  color: '#ffffff', // กำหนดสีข้อความของปุ่ม
+  backgroundColor: '#aeaeae', // Button background color
+  color: '#ffffff', // Button text color
   '&:hover': {
-    backgroundColor: '#039ef4', // สีเมื่อ hover
+    backgroundColor: '#039ef4', // Hover color
   },
 }));
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [tel, setTel] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmpassword, setConfirmPassword] = useState('');
 
-  // ฟังก์ชันตรวจสอบและสมัครสมาชิก
-  const handleRegister = () => {
-    // ตรวจสอบข้อมูลฟอร์ม (ตัวอย่างเบื้องต้น)
-    const formData = {
-      username: (document.getElementById('username') as HTMLInputElement).value,
-      firstname: (document.getElementById('firstname') as HTMLInputElement).value,
-      lastname: (document.getElementById('lastname') as HTMLInputElement).value,
-      email: (document.getElementById('email') as HTMLInputElement).value,
-      tel: (document.getElementById('tel') as HTMLInputElement).value,
-      password: (document.getElementById('password') as HTMLInputElement).value,
-      confirmpassword: (document.getElementById('confirmpassword') as HTMLInputElement).value,
-    };
-
-    if (formData.password !== formData.confirmpassword) {
-      alert('Passwords do not match');
+  const handleRegister = async () => {
+    if (password !== confirmpassword) {
+      toast.error('Passwords do not match');
       return;
     }
 
-    // เขียนลอจิกการสมัครสมาชิกที่นี่ (ถ้ามี)
-    // จากนั้นเปลี่ยนเส้นทางไปยังหน้า /home
-    router.push('/home');
+    try {
+      const response = await fetch('http://localhost:8080/api/register', { // Backend server URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          firstname,
+          lastname,
+          email,
+          tel,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Registration successful');
+        router.push('/login');
+      } else {
+        toast.error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Error: ${errorMessage}`);
+    }
   };
 
   return (
@@ -61,18 +87,18 @@ export default function RegisterPage() {
       <CssBaseline />
       <Box
         sx={{
-          position: 'absolute', // ทำให้ Box ครอบคลุมทั้งหน้าจอ
+          position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: 'url(/imgs/background.jpg)', // ใช้รูปภาพพื้นหลัง
-          backgroundSize: 'cover', // ปรับขนาดภาพให้พอดีกับหน้าจอ
-          backgroundPosition: 'center', // จัดภาพให้อยู่ตรงกลาง
-          backgroundColor: 'rgba(162, 225, 255, 1.0)', // เพิ่มพื้นหลังแบบสีและความโปร่งแสง
-          display: 'flex', // ใช้ Flexbox เพื่อจัดตำแหน่งกลาง
-          alignItems: 'center', // จัดตำแหน่งแนวตั้งกลาง
-          justifyContent: 'center', // จัดตำแหน่งแนวนอนกลาง
+          backgroundImage: 'url(/imgs/background.jpg)', // Background image
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: 'rgba(162, 225, 255, 1.0)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <Container maxWidth="xs">
@@ -101,10 +127,9 @@ export default function RegisterPage() {
               name="username"
               autoComplete="username"
               autoFocus
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* First Name */}
@@ -116,10 +141,9 @@ export default function RegisterPage() {
               label="First Name"
               name="firstname"
               autoComplete="given-name"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* Last Name */}
@@ -131,10 +155,9 @@ export default function RegisterPage() {
               label="Last Name"
               name="lastname"
               autoComplete="family-name"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* Email */}
@@ -146,10 +169,9 @@ export default function RegisterPage() {
               label="Email"
               name="email"
               autoComplete="email"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* Tel */}
@@ -161,10 +183,9 @@ export default function RegisterPage() {
               label="Telephone"
               name="tel"
               autoComplete="tel"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={tel}
+              onChange={(e) => setTel(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* Password */}
@@ -177,10 +198,9 @@ export default function RegisterPage() {
               type="password"
               id="password"
               autoComplete="new-password"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             {/* Confirm Password */}
@@ -193,14 +213,13 @@ export default function RegisterPage() {
               type="password"
               id="confirmpassword"
               autoComplete="new-password"
-              sx={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderRadius: 2,
-              }}
+              value={confirmpassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              sx={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 2 }}
             />
 
             <CustomButton
-              type="button" // เปลี่ยนจาก "submit" เป็น "button"
+              type="button"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
@@ -218,7 +237,7 @@ export default function RegisterPage() {
           </Box>
         </Container>
 
-        {/* ลิงก์ CONTACT ที่มุมล่างขวาของหน้า */}
+        {/* CONTACT link at the bottom right of the page */}
         <Box
           sx={{
             position: 'absolute',
@@ -229,13 +248,9 @@ export default function RegisterPage() {
           }}
         >
           <img
-            src="/icon/contact.png" // ระบุ path ของไอคอนในโฟลเดอร์ public
+            src="/icon/contact.png" // Path to the icon in the public folder
             alt="Contact Icon"
-            style={{
-              width: '20px', // กำหนดขนาดของไอคอน
-              height: '20px',
-              marginRight: '8px', // ระยะห่างระหว่างไอคอนกับข้อความ
-            }}
+            style={{ width: '20px', height: '20px', marginRight: '8px' }}
           />
           <Link href="/contact" variant="body1" sx={{ color: '#000000' }}>
             CONTACT US

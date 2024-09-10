@@ -1,10 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, Grid, Typography, Card, CardContent, CardMedia } from '@mui/material';
-import { items } from '../data/items'; // นำเข้าข้อมูลสินค้า
 import { useCart } from '../context/cartcontext'; // ใช้ CartContext
 
 const Shop: React.FC = () => {
+  const [items, setItems] = useState<any[]>([]); // ใช้ any[] หรือกำหนดประเภทสำหรับรายการสินค้า
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { addToCart } = useCart(); // ดึงฟังก์ชันจาก CartContext
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/products'); // URL ของ API
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setItems(data.products); // สมมติว่า API ส่งข้อมูลในรูปแบบ { products: [...] }
+      } catch (error: any) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Typography color="error">Error: {error}</Typography>;
 
   return (
     <Container sx={{ mt: 5, p: 3, boxShadow: 3 }}>

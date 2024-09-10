@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </Head>
         {showNavbar && <Navbar />} {/* แสดง Navbar ทุกหน้าที่ไม่ใช่ index */}
         <Component {...pageProps} /> {/* แสดง component ของแต่ละ page */}
-        <ToastContainer /> {/* แสดงการแจ้งเตือน */}
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick pauseOnFocusLoss draggable pauseOnHover /> {/* ตั้งค่า ToastContainer */}
       </CartProvider>
     </ThemeProvider>
   );

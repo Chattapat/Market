@@ -20,11 +20,11 @@ func main() {
 	// โหลดตัวแปร environment จากไฟล์ .env
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	// กำหนดการเชื่อมต่อฐานข้อมูล
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Bangkok",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
@@ -53,7 +53,13 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.Default())
+	// ตั้งค่า CORS
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // เพิ่มโดเมนของ frontend ของคุณที่นี่
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	// สร้าง router โดยเรียกใช้ฟังก์ชัน SetupRouter จาก routes
 	router := routes.SetupRouter()
@@ -63,5 +69,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	router.Run(":" + port)
+	if err := router.Run(":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

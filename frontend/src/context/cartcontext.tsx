@@ -2,11 +2,13 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Define CartItem interface
 interface CartItem {
   id: number;
   quantity: number;
 }
 
+// Define CartContextType interface
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (id: number) => void;
@@ -16,11 +18,14 @@ interface CartContextType {
   clearCart: () => void;
 }
 
+// Create CartContext
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// CartProvider component to wrap around children components
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+  // Add item to cart or increase its quantity if already exists
   const addToCart = (id: number) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === id);
@@ -34,6 +39,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
+  // Increase item quantity
   const increaseQuantity = (id: number) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
@@ -43,6 +49,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     toast.info('Quantity increased');
   };
 
+  // Decrease item quantity, but not lower than 1
   const decreaseQuantity = (id: number) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
@@ -52,11 +59,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     toast.info('Quantity decreased');
   };
 
+  // Remove item from cart
   const removeFromCart = (id: number) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== id));
     toast.warn('Item removed from cart');
   };
 
+  // Clear the cart
   const clearCart = () => {
     setCartItems([]);
     toast.info('Cart cleared');
@@ -71,6 +80,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// Custom hook to use the CartContext
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {

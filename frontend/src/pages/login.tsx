@@ -31,18 +31,35 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Simulated user data
-    const ExampleUser = {
-      email: 'test@example.com',
-      password: '123456',
-    };
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/login', { // URL ของเซิร์ฟเวอร์แบ็กเอนด์
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-    if (email === ExampleUser.email && password === ExampleUser.password) {
-      toast.success('Login successful');
-      router.push('/home');
-    } else {
-      toast.error('Invalid email or password');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Login successful');
+        router.push('/home');
+      } else {
+        toast.error('Invalid email or password');
+      }
+    } catch (error) {
+      // Check if error is an instance of Error
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(`Error: ${errorMessage}`);
     }
   };
 

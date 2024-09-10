@@ -1,46 +1,67 @@
-import { FC } from 'react';
-import { useTheme } from 'next-themes'; // นำเข้า useTheme จาก next-themes
-import Link from 'next/link'; // นำเข้า Link จาก Next.js
+import { FC, useEffect, useState } from 'react';
+import { useTheme } from 'next-themes'; 
+import Link from 'next/link'; 
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+}
 
 const Home: FC = () => {
-  const { theme } = useTheme(); // ใช้ useTheme เพื่อเข้าถึงธีมปัจจุบัน
+  const { theme } = useTheme(); 
+  const [products, setProducts] = useState<Product[]>([]); 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/products'); 
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data.products); 
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="container">
-      {/* Description Section */}
       <header className="header">
         <h1>WELCOME TO OUR MARKET!</h1>
         <p>Your one-stop shop for all the best products available. Explore our wide range of items and find what suits you best.</p>
       </header>
 
-      {/* Products Section */}
       <main className="main-content">
         <div className="product-section">
           <h2>Featured Products</h2>
-          <div className="product-list">
-            <div className="product-card">
-              <img src="/imgs/car.jpg" alt="Product 1" />
-              <h3>Product 1</h3>
-              <p>Description of product 1.</p>
+          {loading ? (
+            <p>Loading products...</p>
+          ) : (
+            <div className="product-list">
+              {products.map((product) => (
+                <div className="product-card" key={product.id}>
+                  <img src={product.imageUrl} alt={product.name} />
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                </div>
+              ))}
             </div>
-            <div className="product-card">
-              <img src="/imgs/book.jpg" alt="Product 2" />
-              <h3>Product 2</h3>
-              <p>Description of product 2.</p>
-            </div>
-            <div className="product-card">
-              <img src="/imgs/phone.jpg" alt="Product 3" />
-              <h3>Product 3</h3>
-              <p>Description of product 3.</p>
-            </div>
-          </div>
+          )}
           <Link href="/shop" passHref>
             <span className="shop-button">Explore Our Shop</span>
           </Link>
         </div>
       </main>
 
-      {/* Footer Section */}
       <footer className="footer">
         <p>MARKET101</p>
         <p>
