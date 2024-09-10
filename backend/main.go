@@ -51,6 +51,7 @@ func main() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
+	// สร้าง Gin Router
 	r := gin.Default()
 
 	// ตั้งค่า CORS
@@ -69,6 +70,8 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	// เริ่มต้นเซิร์ฟเวอร์
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
